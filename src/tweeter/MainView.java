@@ -31,12 +31,7 @@ public class MainView implements ActionListener {
 		buildPanel();
 	}
 	
-	public MainView(int i) {
-		setVisible(true);
-		MainFrame.reset();
-	}
-	
-	public void buildPanel() {
+	private void buildPanel() {
 		// Create Panel		
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new GridBagLayout());
@@ -59,19 +54,19 @@ public class MainView implements ActionListener {
 		textArea.setLineWrap(true);
 		textArea.setEditable(false);
 		textArea.setVisible(true);
+		textArea.setBorder(BorderFactory.createLineBorder(Color.WHITE));		
 		
 		JScrollPane scrollPane = new JScrollPane(textArea);
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+		scrollPane.setBorder(textArea.getBorder());
 		
-		scrollPane.setBorder(BorderFactory.createEtchedBorder());
-		
+		//Image for the active Tweet		
 		ImageIcon icon = new ImageIcon("bilder/redbull.jpg");
 		Image image = icon.getImage();
 		Image newimg = image.getScaledInstance(250, 180, java.awt.Image.SCALE_SMOOTH);
 		icon = new ImageIcon(newimg);
 		JLabel imageLabel = new JLabel(icon);
 		imageLabel.setPreferredSize(new Dimension(180, 250));
-		//imageLabel.setBorder(BorderFactory.createEtchedBorder());
 		
 		//Grid for mainPanel
 		gc.weightx = 1;
@@ -115,8 +110,13 @@ public class MainView implements ActionListener {
 		mainPanel.add(newBtn, gc);
 		
 		mainPanel.setBackground(Color.WHITE);
+		setPanel(mainPanel);
 	}
 
+	private void setPanel(JPanel mainPanel) {
+		this.mainPanel = mainPanel;
+	}
+	
 	public JPanel getPanel() {
 		return mainPanel;
 	}
@@ -125,14 +125,14 @@ public class MainView implements ActionListener {
 		newBtn.setVisible(state);
 		contentPanel.setVisible(state);
 		slide.setVisible(state);
+		MainFrame.reset();
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		JButton clicked = (JButton)e.getSource();
 		if(clicked == newBtn) {
-			recordingPanel = new TweetPanelRecording();
-			setVisible(false);
+			recordingPanel = new TweetPanelRecording(callback);
 			gc.weightx = 1;
 			gc.weighty = 1;
 			gc.gridx = 0;
@@ -140,8 +140,16 @@ public class MainView implements ActionListener {
 			gc.fill = GridBagConstraints.BOTH;
 			gc.anchor = GridBagConstraints.CENTER;
 			mainPanel.add(recordingPanel.getPanel(), gc);
-			MainFrame.reset();
+			setVisible(false);
 		}
 		
 	}
+	
+	Runnable callback = new Runnable(){
+	    @Override
+	    public void run()
+	    {
+	    	setVisible(true);
+	    }
+	};
 }

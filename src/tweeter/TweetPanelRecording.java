@@ -8,7 +8,7 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import java.sql.SQLException;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -18,6 +18,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import database.Database;
+
 public class TweetPanelRecording implements ActionListener {
 	private JPanel panel;
 	private JTextArea header;
@@ -26,14 +28,31 @@ public class TweetPanelRecording implements ActionListener {
 	private ImageIcon icon = new ImageIcon();
 	private JLabel iconLabel;
 	private JButton save;
-	private MainView mv;
+	private int id = 0;
+	private Runnable callback;
+	private Database db = new Database();
 	
-	public Tweet tweet;
-	public ArrayList<Tweet> tweetList = new ArrayList<Tweet>();
+	public Tweet tweet;	
 	
-	
-	public TweetPanelRecording() {
+	public TweetPanelRecording(Runnable finishedCallback) {
+		callback = finishedCallback;
 		buildPanel();
+		
+		
+		// Christian fragen wie man das anders lösen kann
+		Runtime.getRuntime().addShutdownHook(new Thread()
+		{
+		    @Override
+		    public void run()
+		    {
+		        try {
+					db.closeDB();
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+		    }
+		});
+		
 	}
 	
 	private void buildPanel() {
@@ -59,10 +78,11 @@ public class TweetPanelRecording implements ActionListener {
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		
 		//load the Image
-		ImageIcon icon = new ImageIcon("bilder/testbild.jpg");
+		icon = new ImageIcon("bilder/testbild.jpg");
 		Image image = icon.getImage();
 		Image newimg = image.getScaledInstance(250, 180, java.awt.Image.SCALE_SMOOTH);
 		icon = new ImageIcon(newimg);
+		icon.setDescription("bilder/testbild.jpg");
 		
 		iconLabel = new JLabel(icon);
 		uploadImage = new JButton("UPLOAD");
@@ -124,19 +144,31 @@ public class TweetPanelRecording implements ActionListener {
 		return panel;
 	}
 
-	public ArrayList<Tweet> getList() {
-		return tweetList;
+	private void setId(int id) {
+		this.id = id;
+	}
+	
+	private int getId() {
+		return id;
 	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		JButton clicked = (JButton)e.getSource();
-		mv = new MainView();
+		callback.run();
+		panel.setVisible(false);
 		if(clicked == save) {
-			int i = tweetList.size();
-			tweetList.add(new Tweet(description.getText(), icon.toString(), ++i));
-			panel.setVisible(false);
-			mv.setVisible(true);
+			try {
+				setId(++id);
+				new Tweet(db, getId(), header.getText(), description.getText(), icon.getDescription());
+			} catch (SQLException ex) {
+				System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
+				System.exit(0);
+			}
 		}	
 	}
+	
+	
+	
+	
 }

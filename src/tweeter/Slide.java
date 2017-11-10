@@ -36,6 +36,8 @@ public class Slide implements ActionListener{
 		panel = new JPanel();
 		panel.setLayout(new GridBagLayout());
 		panel.setBackground(Color.WHITE);
+		panel.setBorder(BorderFactory.createMatteBorder(0, 0, 3, 0, Color.BLACK));
+		
 		GridBagConstraints gc = new GridBagConstraints();	
 		
 		//Buttons with Image as arrow
