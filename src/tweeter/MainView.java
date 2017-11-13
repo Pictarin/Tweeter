@@ -32,6 +32,8 @@ public class MainView implements ActionListener {
 	}
 	
 	private void buildPanel() {
+		recordingPanel = new TweetPanelRecording(callback);
+		
 		// Create Panel		
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new GridBagLayout());
@@ -132,7 +134,6 @@ public class MainView implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		JButton clicked = (JButton)e.getSource();
 		if(clicked == newBtn) {
-			recordingPanel = new TweetPanelRecording(callback);
 			gc.weightx = 1;
 			gc.weighty = 1;
 			gc.gridx = 0;
@@ -140,6 +141,7 @@ public class MainView implements ActionListener {
 			gc.fill = GridBagConstraints.BOTH;
 			gc.anchor = GridBagConstraints.CENTER;
 			mainPanel.add(recordingPanel.getPanel(), gc);
+			recordingPanel.setVisible(true);
 			setVisible(false);
 		}
 		

@@ -7,7 +7,6 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -25,7 +24,6 @@ public class Slide implements ActionListener{
 	public JLabel redBullLabel;
 	public JLabel familDayLabel;
 	public TweetPanelRecording tweetPanel;
-	public ArrayList <?> list = new ArrayList();
 	
 	public Slide() {
 		createPanel();

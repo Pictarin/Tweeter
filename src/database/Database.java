@@ -13,7 +13,7 @@ public class Database {
 	private String sql;
 	private ResultSet rs;
 	private PreparedStatement preparedStatement;
-
+	
 	public Database() {
 		c = null;
 		stmt = null;
@@ -24,22 +24,18 @@ public class Database {
 			c = DriverManager.getConnection("jdbc:sqlite:tweeter.db");
 			c.setAutoCommit(false);
 			System.out.println("Opened database succesfully");
-			
-			//if Abfrage fehlt - git push trotz fehlender if abfrage
-			//schauen ob table bereits vorhanden
-			//System tables
-			// 10.11.2017
-			
+
 			stmt = c.createStatement();
-			sql = "CREATE TABLE TWEETS " + 
-					"(ID INT PRIMARY KEY    NOT NULL," +
-					"TWEET_NUMBER    INT    NOT NULL," +
-					"TWEET_HEADER    TEXT   NOT NULL," +
-					"TWEET_TEXT      TEXT   NOT NULL," +
-					"TWEET_IMAGE     TEXT   NOT NULL)";
+				sql = "CREATE TABLE IF NOT EXISTS " + "TWEETS" + 
+						"(ID INT PRIMARY KEY    NOT NULL," +
+						"TWEET_NUMBER    INT    NOT NULL," +
+						"TWEET_HEADER    TEXT   NOT NULL," +
+						"TWEET_TEXT      TEXT   NOT NULL," +
+						"TWEET_IMAGE     TEXT   NOT NULL)";
 			stmt.executeUpdate(sql);
 			
-			System.out.println("Table created succesfully");
+			
+			System.out.println("Table created succesfully");			
 			
 			rs = stmt.executeQuery("SELECT * FROM TWEETS;");
 			
@@ -75,10 +71,18 @@ public class Database {
 		}
 	}
 	
+	public int getPrimaryKey() throws SQLException {
+		rs = stmt.executeQuery("SELECT * FROM TWEETS;");
+		int id = 0;
+		while(rs.next()) {
+			id = rs.getInt("id");
+		}
+		return id;
+	}
+	
 	//Read content in DB
 	public void readDB() throws SQLException {
 		rs = stmt.executeQuery("SELECT * FROM TWEETS;");
-		
 		while(rs.next()) {
 			int id = rs.getInt("id");
 			int tweet_number = rs.getInt("tweet_number");

@@ -9,16 +9,19 @@ import database.Database;
 
 public class Tweet {
 	private String description;
-	private int numberOfTweets = 0;
 	private ImageIcon imageForTweet;
 	
 	// Tweet Constructor
 	public Tweet(Database db, int numberOfTweets, String header, String description, String pathOfImage) throws SQLException {
 		this.description = description;
 		imageForTweet = formatImage(pathOfImage);
-		setNumberOfTweets(numberOfTweets);
+		System.out.println("ID = " + numberOfTweets);
 		db.addIntoTweets(numberOfTweets, header, description, pathOfImage);
 		db.readDB();
+	}
+	
+	public Tweet(String imagePath) {
+		
 	}
 	
 	// Image Formatter
@@ -37,14 +40,6 @@ public class Tweet {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public int getNumberOfTweets() {
-		return numberOfTweets;
-	}
-
-	public void setNumberOfTweets(int numberOfTweets) {
-		this.numberOfTweets = numberOfTweets;
 	}
 
 	public ImageIcon getImageForTweet() {
