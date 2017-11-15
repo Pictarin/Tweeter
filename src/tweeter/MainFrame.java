@@ -1,6 +1,8 @@
 package tweeter;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
 import javax.swing.JFrame;
@@ -8,8 +10,11 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
-public class MainFrame {
+import database.Database;
+
+public class MainFrame implements ActionListener {
 	private static JFrame frame;
+	private MainView mainView;
 	
 	public MainFrame() throws SQLException {
 		
@@ -26,14 +31,16 @@ public class MainFrame {
 		
 		JMenu data = new JMenu("Datei");		
 		JMenuItem tweetEdit = new JMenuItem("Bearbeiten");
+		tweetEdit.addActionListener(this);
 		JMenuItem tweetDelete = new JMenuItem("Löschen");
+		tweetDelete.addActionListener(this);
 		data.add(tweetEdit);
 		data.add(tweetDelete);		
 		menuBar.add(data);
 		
 		System.out.println("Frame erstellt");
 		
-		MainView mainView = new MainView();
+		mainView = new MainView();
 		frame.add(menuBar, BorderLayout.NORTH);
 		frame.add(mainView.getPanel(), BorderLayout.CENTER);
 		reset();
@@ -45,5 +52,25 @@ public class MainFrame {
 	
 	public static void reset() {
 		frame.revalidate();
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		JMenuItem clicked = (JMenuItem)e.getSource();
+		if(clicked.getText() == "Bearbeiten") {
+			
+			System.out.println("Bearbeiten!");
+			
+		}else if(clicked.getText() == "Löschen") {
+			Database db = mainView.getDatabase();
+			int index = mainView.getBtnCounter();
+			System.out.println(++index);
+			try {
+				db.deleteTweet(index);
+				System.out.println("Löschen!");
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+		}
 	}
 }

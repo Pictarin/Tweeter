@@ -56,6 +56,17 @@ public class Database {
 		System.out.println("Operation done succesfully");
 	}
 	
+	public void deleteTweet(int index) throws SQLException {
+		preparedStatement = c.prepareStatement("DELETE from TWEETS where ID = ?");
+		
+		preparedStatement.setInt(1, index);		
+		int result = preparedStatement.executeUpdate();		
+		
+		if (result == 1) {
+			c.commit();
+		}
+	}
+	
 	//Add a new Tweet to the DB
 	public void addIntoTweets(int numberOfTweets, String header, String description, String pathOfImage) throws SQLException {
 		preparedStatement = c.prepareStatement("INSERT INTO TWEETS (ID, TWEET_NUMBER, TWEET_HEADER, TWEET_TEXT, TWEET_IMAGE)" +
@@ -94,13 +105,13 @@ public class Database {
 			String tweet_header = rs.getString("tweet_header");
 			String tweet_text = rs.getString("tweet_text");
 			String tweet_image = rs.getString("tweet_image");
-			
+
 			//Ausgabe zur Überprüfung in der Konsole
-			System.out.println("ID = " + id);
-			System.out.println("TWEET_NUMBER = " + tweet_number);
-			System.out.println("TWEET_HEADER = " + tweet_header);
-			System.out.println("TWEET_TEXT = " + tweet_text);
-			System.out.println("TWEET_IMAGE = " + tweet_image);	
+//			System.out.println("ID = " + id);
+//			System.out.println("TWEET_NUMBER = " + tweet_number);
+//			System.out.println("TWEET_HEADER = " + tweet_header);
+//			System.out.println("TWEET_TEXT = " + tweet_text);
+//			System.out.println("TWEET_IMAGE = " + tweet_image);	
 		}
 		return i;
 	}
@@ -137,15 +148,24 @@ public class Database {
 		return null;
 	}
 	
-	//TODO
-	//Fehler wird bei neustart immer nur das erste Bild mit ID 1 angezeigt?!?!?!?
-	//get the TweetImage
 	public ArrayList<String> getTweetImage() throws SQLException {
 		ArrayList<String> array = new ArrayList<String>();
 		rs = stmt.executeQuery("SELECT * FROM TWEETS;");
 		while(rs.next()) {
-			String tweet_image = rs.getString("tweet_image");
-			array.add(tweet_image);
+			String tweetImage = rs.getString("tweet_image");
+			array.add(tweetImage);
+		}
+		return array;
+	}
+	
+	public ArrayList<String> getTweetComplete() throws SQLException {
+		ArrayList<String> array = new ArrayList<String>();
+		rs = stmt.executeQuery("SELECT * FROM TWEETS;");
+		while(rs.next()) {
+			String tweetTextHeader = rs.getString("tweet_header");
+			String tweetTextDescription = rs.getString("tweet_text");
+			String tweetComplete = tweetTextHeader+ "\n\n" + tweetTextDescription;
+			array.add(tweetComplete);
 		}
 		return array;
 	}

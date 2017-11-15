@@ -27,6 +27,7 @@ public class Slide implements ActionListener{
 	private static int tweetsInDatabase = 0;	
 	private static GridBagConstraints gc = new GridBagConstraints();
 	private ArrayList<String> imagesFromTweets = new ArrayList<String>();
+	private ArrayList<String> textFromTweet = new ArrayList<String>();
 	
 	public static JLabel imageLabel;
 	public TweetPanelRecording tweetPanel;
@@ -149,8 +150,15 @@ public class Slide implements ActionListener{
 	public String getImage(int index) throws SQLException {
 		imagesFromTweets = db.getTweetImage();
 		String imagePath = imagesFromTweets.get(index);
-		return imagePath;
 		
+		return imagePath;
+	}
+	
+	public String getTweetText(int index) throws SQLException {
+		textFromTweet = db.getTweetComplete();
+		String tweetComplete = textFromTweet.get(index);
+		
+		return tweetComplete;	
 	}
 	
 	//Geplant das sich mithilfe der Pfeil Buttons immer nur 7 Bilder anzeigen lassen mit

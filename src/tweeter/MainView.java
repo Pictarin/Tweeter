@@ -29,6 +29,8 @@ public class MainView implements ActionListener {
 	private int btnCounter;
 	private JLabel imageLabel = new JLabel();
 	private ImageIcon icon = new ImageIcon("null");
+	private JTextArea textArea = new JTextArea("null");
+	
 	
 	public JPanel mainPanel;
 	public Tweet tweet;
@@ -68,7 +70,7 @@ public class MainView implements ActionListener {
 		if(text == null) {
 			text = "\n\nNoch keine Einträge vorhanden";
 		}
-		JTextArea textArea = new JTextArea(header);
+		textArea.setText(text);
 		textArea.append("\n\n");
 		textArea.append(text);
 		textArea.setLineWrap(true);
@@ -137,8 +139,12 @@ public class MainView implements ActionListener {
 		icon = formatImage();
 		imageLabel.setIcon(icon);
 		imageLabel.setPreferredSize(new Dimension(180, 250));
+		
+		String textTweetComplete = slide.getTweetText(btnCounter);
+		textArea.setText(textTweetComplete);
 	}
 	
+	//Formatiere das Bild auf 250 x 180
 	public ImageIcon formatImage() {
 		Image image = icon.getImage();
 		Image newimg = image.getScaledInstance(250, 180, java.awt.Image.SCALE_SMOOTH);
@@ -146,14 +152,25 @@ public class MainView implements ActionListener {
 		return icon;
 	}
 	
+	//set this.Panel
 	private void setPanel(JPanel mainPanel) {
 		this.mainPanel = mainPanel;
 	}
 	
+	//get this.Panel
 	public JPanel getPanel() {
 		return mainPanel;
 	}
 	
+	public int getBtnCounter() {
+		return btnCounter;
+	}
+	
+	public Database getDatabase() {
+		return db;
+	}
+	
+	//sets the visible for the components on the JPanel
 	public void setVisible(boolean state) {
 		newBtn.setVisible(state);
 		contentPanel.setVisible(state);
@@ -161,6 +178,7 @@ public class MainView implements ActionListener {
 		MainFrame.reset();
 	}
 	
+	//ActionListener
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		JButton clicked = (JButton)e.getSource();
