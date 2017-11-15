@@ -8,6 +8,7 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -17,22 +18,29 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import database.Database;
+
 public class MainView implements ActionListener {
 	private JButton newBtn;
 	private JPanel contentPanel;
-	private JPanel slide;
+	private Slide slide;
 	private GridBagConstraints gc = new GridBagConstraints();
+	private Database db;
+	private int btnCounter;
+	private JLabel imageLabel = new JLabel();
+	private ImageIcon icon = new ImageIcon("null");
 	
 	public JPanel mainPanel;
 	public Tweet tweet;
 	public TweetPanelRecording recordingPanel;
 	
-	public MainView() {
+	public MainView() throws SQLException {
 		buildPanel();
 	}
 	
-	private void buildPanel() {
+	private void buildPanel() throws SQLException {
 		recordingPanel = new TweetPanelRecording(callback);
+		db = recordingPanel.getDatabase();
 		
 		// Create Panel		
 		mainPanel = new JPanel();
@@ -46,13 +54,23 @@ public class MainView implements ActionListener {
 		contentPanel.setBackground(Color.WHITE);
 		
 		// Components for Panel
-		slide = new Slide().getPanel();
+		slide = new Slide(db, this);
 		
 		newBtn = new JButton("neu");
 		newBtn.addActionListener(this);
 		
 		//TextArea - text for each tweet
-		JTextArea textArea = new JTextArea("Ich bin eine ScrollBar - Text Area");
+		String header = db.getTweetHeader();
+		if(header == null) {
+			header = "Noch keine Einträge vorhanden";
+		}
+		String text = db.getTweetText();
+		if(text == null) {
+			text = "\n\nNoch keine Einträge vorhanden";
+		}
+		JTextArea textArea = new JTextArea(header);
+		textArea.append("\n\n");
+		textArea.append(text);
 		textArea.setLineWrap(true);
 		textArea.setEditable(false);
 		textArea.setVisible(true);
@@ -62,13 +80,10 @@ public class MainView implements ActionListener {
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		scrollPane.setBorder(textArea.getBorder());
 		
-		//Image for the active Tweet		
-		ImageIcon icon = new ImageIcon("bilder/redbull.jpg");
-		Image image = icon.getImage();
-		Image newimg = image.getScaledInstance(250, 180, java.awt.Image.SCALE_SMOOTH);
-		icon = new ImageIcon(newimg);
-		JLabel imageLabel = new JLabel(icon);
-		imageLabel.setPreferredSize(new Dimension(180, 250));
+		//Image for the active Tweet
+		if(db.getPrimaryKey() != 0) {
+			showInView();
+		}
 		
 		//Grid for mainPanel
 		gc.weightx = 1;
@@ -77,7 +92,7 @@ public class MainView implements ActionListener {
 		gc.gridy = 0;
 		gc.anchor = GridBagConstraints.CENTER;
 		gc.fill = GridBagConstraints.BOTH;
-		mainPanel.add(slide, gc);
+		mainPanel.add(slide.getPanel(), gc);
 		
 		//Grid for contentPanel
 		gc.weightx = 3;
@@ -114,7 +129,23 @@ public class MainView implements ActionListener {
 		mainPanel.setBackground(Color.WHITE);
 		setPanel(mainPanel);
 	}
-
+	
+	public void showInView() throws SQLException {
+		btnCounter = slide.getI();
+		String imgPath = slide.getImage(btnCounter);
+		icon = new ImageIcon(imgPath);
+		icon = formatImage();
+		imageLabel.setIcon(icon);
+		imageLabel.setPreferredSize(new Dimension(180, 250));
+	}
+	
+	public ImageIcon formatImage() {
+		Image image = icon.getImage();
+		Image newimg = image.getScaledInstance(250, 180, java.awt.Image.SCALE_SMOOTH);
+		icon = new ImageIcon(newimg);
+		return icon;
+	}
+	
 	private void setPanel(JPanel mainPanel) {
 		this.mainPanel = mainPanel;
 	}
@@ -126,7 +157,7 @@ public class MainView implements ActionListener {
 	public void setVisible(boolean state) {
 		newBtn.setVisible(state);
 		contentPanel.setVisible(state);
-		slide.setVisible(state);
+		slide.getPanel().setVisible(state);
 		MainFrame.reset();
 	}
 	
@@ -152,6 +183,7 @@ public class MainView implements ActionListener {
 	    public void run()
 	    {
 	    	setVisible(true);
+	    	
 	    }
 	};
 }

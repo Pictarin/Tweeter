@@ -32,14 +32,16 @@ public class TweetPanelRecording implements ActionListener, FocusListener {
 	private JLabel recordingLabel;
 	private String headerText = "Überschrift eingeben";
 	private JTextField header = new JTextField(headerText);
+	private String descriptionText = "Artikelbeschreibung";
 	private JTextArea description;
 	private JButton uploadImage;
 	private ImageIcon icon;
 	private JLabel iconLabel;
 	private JButton save;
 	private Runnable callback;
-	private Database db = new Database();
 	private JScrollPane scrollPane;
+	
+	private Database db = new Database();
 	private JFileChooser fileChooser;
 	
 	public Tweet tweet;	
@@ -81,7 +83,7 @@ public class TweetPanelRecording implements ActionListener, FocusListener {
 		header = new JTextField(headerText);
 		header.addFocusListener(this);
 		header.setBorder(BorderFactory.createEtchedBorder());
-		description = new JTextArea("BESCHREIBUNG DES ARTIKELS");
+		description = new JTextArea(descriptionText);
 		
 		description.setBorder(BorderFactory.createEtchedBorder());
 		description.setLineWrap(true);
@@ -161,6 +163,10 @@ public class TweetPanelRecording implements ActionListener, FocusListener {
 		setVisible(false);
 	}
 	
+	public Database getDatabase() {
+		return db;
+	}
+	
 	public void setVisible(boolean state) {
 		panel.setVisible(state);
 		MainFrame.reset();
@@ -185,13 +191,24 @@ public class TweetPanelRecording implements ActionListener, FocusListener {
 		JButton clicked = (JButton)e.getSource();
 		if(clicked == save) {
 			try {
+				//TODO 
+				//Prüfen ob alles ausgefüllt wurde
 				new Tweet(db, db.getPrimaryKey() + 1, header.getText(), description.getText(), icon.getDescription());
+				Slide.addInToSlide(icon.getDescription());
 			} catch (SQLException ex) {
 				System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
 				System.exit(0);
 			}
-			callback.run();
+			header.setText(headerText);
+			description.setText(descriptionText);
+			iconLabel.setIcon(null);
+			icon.setDescription(null);
 			setVisible(false);
+			callback.run();
+			
+			// TODO
+			//im MainView verschiebt sich das Label des Bildes
+			//Bug wenn man das Frame "refreshed" passt wieder alles
 			
 		}else if(clicked == uploadImage) {
 			fileChooser = new JFileChooser();

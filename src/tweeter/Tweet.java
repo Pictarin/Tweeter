@@ -20,10 +20,6 @@ public class Tweet {
 		db.readDB();
 	}
 	
-	public Tweet(String imagePath) {
-		
-	}
-	
 	// Image Formatter
 	private ImageIcon formatImage(String path) {
 		ImageIcon image = new ImageIcon(path);

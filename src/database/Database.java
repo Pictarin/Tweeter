@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class Database {
 	
@@ -37,7 +38,7 @@ public class Database {
 			
 			System.out.println("Table created succesfully");			
 			
-			rs = stmt.executeQuery("SELECT * FROM TWEETS;");
+			rs = stmt.executeQuery("SELECT * FROM TWEETS ORDER BY ID;");
 			
 			//UPDATE METHODE - in dem tablemodel tweets wird die TWEET_NUMBER auf 3 gesetzt wo sich die ID 1 befindet
 			//String sql = "UPDATE TWEETS set TWEET_NUMBER = 3 where ID=1;";
@@ -51,6 +52,7 @@ public class Database {
 			System.err.println(e.getClass().getName() + ": " + e.getMessage());
 			System.exit(0);
 		}
+		
 		System.out.println("Operation done succesfully");
 	}
 	
@@ -71,6 +73,7 @@ public class Database {
 		}
 	}
 	
+	//gets the PrimaryKey
 	public int getPrimaryKey() throws SQLException {
 		rs = stmt.executeQuery("SELECT * FROM TWEETS;");
 		int id = 0;
@@ -81,21 +84,70 @@ public class Database {
 	}
 	
 	//Read content in DB
-	public void readDB() throws SQLException {
+	public int readDB() throws SQLException {
+		int i = 0;
 		rs = stmt.executeQuery("SELECT * FROM TWEETS;");
 		while(rs.next()) {
+			i++;
 			int id = rs.getInt("id");
 			int tweet_number = rs.getInt("tweet_number");
 			String tweet_header = rs.getString("tweet_header");
 			String tweet_text = rs.getString("tweet_text");
 			String tweet_image = rs.getString("tweet_image");
 			
+			//Ausgabe zur Überprüfung in der Konsole
 			System.out.println("ID = " + id);
 			System.out.println("TWEET_NUMBER = " + tweet_number);
 			System.out.println("TWEET_HEADER = " + tweet_header);
 			System.out.println("TWEET_TEXT = " + tweet_text);
 			System.out.println("TWEET_IMAGE = " + tweet_image);	
 		}
+		return i;
+	}
+	
+	//get the TweetNumber
+	public int getTweetNumber() throws SQLException {
+		rs = stmt.executeQuery("SELECT * FROM TWEETS;");
+		while(rs.next()) {
+			int tweet_number = rs.getInt("tweet_number");
+
+			return tweet_number;
+		}
+		return 0;
+	}
+	
+	//get the TweetHeader
+	public String getTweetHeader() throws SQLException {
+		rs = stmt.executeQuery("SELECT * FROM TWEETS;");
+		while(rs.next()) {
+			String tweet_header = rs.getString("tweet_header");
+			return tweet_header;
+		}
+		return null;
+	}
+	
+	//get the TweetText
+	public String getTweetText() throws SQLException {
+		rs = stmt.executeQuery("SELECT * FROM TWEETS;");
+		while(rs.next()) {
+			String tweet_text = rs.getString("tweet_text");
+			
+			return tweet_text;
+		}
+		return null;
+	}
+	
+	//TODO
+	//Fehler wird bei neustart immer nur das erste Bild mit ID 1 angezeigt?!?!?!?
+	//get the TweetImage
+	public ArrayList<String> getTweetImage() throws SQLException {
+		ArrayList<String> array = new ArrayList<String>();
+		rs = stmt.executeQuery("SELECT * FROM TWEETS;");
+		while(rs.next()) {
+			String tweet_image = rs.getString("tweet_image");
+			array.add(tweet_image);
+		}
+		return array;
 	}
 	
 	//Close DB	
