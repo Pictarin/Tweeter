@@ -70,7 +70,7 @@ public class MainView implements ActionListener {
 		if(text == null) {
 			text = "\n\nNoch keine Einträge vorhanden";
 		}
-		textArea.setText(text);
+		textArea.setText(header);
 		textArea.append("\n\n");
 		textArea.append(text);
 		textArea.setLineWrap(true);
@@ -143,6 +143,26 @@ public class MainView implements ActionListener {
 		String textTweetComplete = slide.getTweetText(btnCounter);
 		textArea.setText(textTweetComplete);
 	}
+	
+	public void showInView(boolean state) throws SQLException {
+		btnCounter = slide.getI();
+		--btnCounter;
+		slide.setI(btnCounter);
+		String imgPath = slide.getImage(btnCounter);
+		icon = new ImageIcon(imgPath);
+		icon = formatImage();
+		imageLabel.setIcon(icon);
+		imageLabel.setPreferredSize(new Dimension(180, 250));
+		
+		String textTweetComplete = slide.getTweetText(btnCounter);
+		textArea.setText(textTweetComplete);
+	}
+	
+	public void removeFromSlide(int index) throws SQLException {
+		slide.removeFromSlide(index);
+		showInView(true);
+	}
+	
 	
 	//Formatiere das Bild auf 250 x 180
 	public ImageIcon formatImage() {

@@ -29,6 +29,7 @@ public class Application {
 		frame = new MainFrame();
 		Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
 			public void run() {
+				System.out.println("Beende Tweeter!");
 				f.delete();
 			}
 		}));

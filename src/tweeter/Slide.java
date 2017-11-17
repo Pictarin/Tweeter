@@ -24,10 +24,13 @@ public class Slide implements ActionListener{
 	private JButton btnL;
 	private static JButton btnR;
 	private int i = 1;
+	private int counter = 0;
 	private static int tweetsInDatabase = 0;	
 	private static GridBagConstraints gc = new GridBagConstraints();
-	private ArrayList<String> imagesFromTweets = new ArrayList<String>();
-	private ArrayList<String> textFromTweet = new ArrayList<String>();
+	private ArrayList<String> imagesFromTweets = new ArrayList<>();
+	private ArrayList<String> textFromTweet = new ArrayList<>();
+	private static ArrayList <String> imagePathArray = new ArrayList<>();
+	private static ArrayList <JLabel> imageLabels = new ArrayList<>();
 	
 	public static JLabel imageLabel;
 	public TweetPanelRecording tweetPanel;
@@ -80,15 +83,34 @@ public class Slide implements ActionListener{
 			ImageIcon image = new ImageIcon(path);
 			image = formatImage(path);
 			//Bestehende Elemente aus der DB auf dem Grid anordnen bei Start der Application
-			imageLabel = new JLabel(image);
-			int gridPosition = i;
-			gc.gridx = ++gridPosition;
-			gc.gridy = 0;
-			gc.anchor = GridBagConstraints.NORTH;
-			gc.insets = new Insets(0, 5, 0, 5);
-			panel.add(imageLabel, gc);
+			if(counter < 5) {
+				imageLabel = new JLabel(image);
+				imageLabel.setVisible(true);
+				int gridPosition = i;
+				gc.gridx = ++gridPosition;
+				gc.gridy = 0;
+				gc.anchor = GridBagConstraints.NORTH;
+				gc.insets = new Insets(0, 5, 0, 5);
+				panel.add(imageLabel, gc);
+				imageLabels.add(imageLabel);
+				counter++;
+			} else {
+				imageLabel = new JLabel(image);
+				imageLabel.setVisible(false);
+				int gridPosition = i;
+				gc.gridx = ++gridPosition;
+				gc.gridy = 0;
+				gc.anchor = GridBagConstraints.NORTH;
+				gc.insets = new Insets(0, 5, 0, 5);
+				panel.add(imageLabel, gc);
+				imageLabels.add(imageLabel);
+				counter++;
+			}
 		}
-		i = 0;
+		setI(0);
+		visibleInSlide();
+		
+		
 		//Grid for content on the Panel
 		gc.gridx = 0;
 		gc.gridy = 0;
@@ -96,12 +118,53 @@ public class Slide implements ActionListener{
 		gc.insets = new Insets(0, 0, 0, 5);
 		panel.add(btnL, gc);
 
-		int gridPosition = tweetsInDatabase;
-		gc.gridx = ++gridPosition;
+		gc.gridx = 6;
 		gc.gridy = 0;
 		gc.anchor = GridBagConstraints.EAST;
 		gc.insets = new Insets(0, 5, 0, 0);
 		panel.add(btnR, gc);
+	}
+	
+	public void resetSlide() {
+		panel.revalidate();
+	}
+	
+	public void createSlideIcons() throws SQLException {
+		imagesFromTweets = db.getTweetImage();
+		for(i = 0; i < imagesFromTweets.size(); i++) {
+			String path = imagesFromTweets.get(i);
+			ImageIcon image = new ImageIcon(path);
+			image = formatImage(path);
+			//Bestehende Elemente aus der DB auf dem Grid anordnen bei Start der Application
+			if(counter < 5) {
+				imageLabel = new JLabel(image);
+				imageLabel.setVisible(true);
+				int gridPosition = i;
+				gc.gridx = ++gridPosition;
+				gc.gridy = 0;
+				gc.anchor = GridBagConstraints.NORTH;
+				gc.insets = new Insets(0, 5, 0, 5);
+				panel.add(imageLabel, gc);
+				counter++;
+			} else {
+				imageLabel = new JLabel(image);
+				imageLabel.setVisible(false);
+				int gridPosition = i;
+				gc.gridx = ++gridPosition;
+				gc.gridy = 0;
+				gc.anchor = GridBagConstraints.NORTH;
+				gc.insets = new Insets(0, 5, 0, 5);
+				panel.add(imageLabel, gc);
+				counter++;
+			}
+		}
+	}
+	
+private void visibleInSlide() throws SQLException {	
+		//gridx = 0 besetzt! btnLinks
+		//gridx = 6 besetzt! btnRechts
+		//gridx = 1 - 5 frei!
+	
 	}
 	
 	public static void addInToSlide(String path) throws SQLException {
@@ -109,35 +172,58 @@ public class Slide implements ActionListener{
 		int gridPosition = tweetsInDatabase;
 		String imagePath = path;
 		ImageIcon image = formatImage(imagePath);
+		imagePathArray = db.getTweetImage();		
 		
-		panel.remove(btnR);
-		
-		imageLabel = new JLabel(image);
-		gc.gridx = gridPosition;
-		gc.gridy = 0;
-		gc.anchor = GridBagConstraints.NORTH;
-		gc.insets = new Insets(0, 5, 0, 5);
-		panel.add(imageLabel, gc);
-		
-		gc.gridx = ++gridPosition;
-		gc.gridy = 0;
-		gc.anchor = GridBagConstraints.EAST;
-		gc.insets = new Insets(0, 5, 0, 0);
-		panel.add(btnR, gc);
+		if(imagePathArray.size() <= 5) {
+			panel.remove(btnR);
+			
+			imageLabel = new JLabel(image);
+			gc.gridx = gridPosition;
+			gc.gridy = 0;
+			gc.anchor = GridBagConstraints.NORTH;
+			gc.insets = new Insets(0, 5, 0, 5);
+			panel.add(imageLabel, gc);
+			imageLabels.add(imageLabel);
+			
+			gc.gridx = ++gridPosition;
+			gc.gridy = 0;
+			gc.anchor = GridBagConstraints.EAST;
+			gc.insets = new Insets(0, 5, 0, 0);
+			panel.add(btnR, gc);
+		}else {
+			panel.remove(btnR);
+			
+			imageLabel = new JLabel(image);
+			imageLabel.setVisible(false);
+			gc.gridx = gridPosition;
+			gc.gridy = 0;
+			gc.anchor = GridBagConstraints.NORTH;
+			gc.insets = new Insets(0, 5, 0, 5);
+			panel.add(imageLabel, gc);
+			imageLabels.add(imageLabel);
+			if(imagePathArray.size() >= 5) {
+				gc.gridx = 6;
+				gc.gridy = 0;
+				gc.anchor = GridBagConstraints.EAST;
+				gc.insets = new Insets(0, 5, 0, 0);
+				panel.add(btnR, gc);	
+			}else {
+				gc.gridx = ++gridPosition;
+				gc.gridy = 0;
+				gc.anchor = GridBagConstraints.EAST;
+				gc.insets = new Insets(0, 5, 0, 0);
+				panel.add(btnR, gc);
+			}
+		}
 	}
 	
-	private void setI(int i) {
-		this.i = i;
-	}
-	
-	public int getI() {
-		return i;
-	}
-	
-	public JPanel getPanel() {
-		return panel;
-	}
+	public void removeFromSlide(int index) {	
+		imageLabel = imageLabels.get(index);
+		panel.remove(imageLabel);
 
+		panel.revalidate();
+	}
+	
 	public static ImageIcon formatImage(String path) {
 		ImageIcon image = new ImageIcon(path);
 		Image img = image.getImage();
@@ -149,6 +235,7 @@ public class Slide implements ActionListener{
 	//Get the image from ArrayList(index)
 	public String getImage(int index) throws SQLException {
 		imagesFromTweets = db.getTweetImage();
+		System.out.println("INDEX : " + index);
 		String imagePath = imagesFromTweets.get(index);
 		
 		return imagePath;
@@ -161,10 +248,24 @@ public class Slide implements ActionListener{
 		return tweetComplete;	
 	}
 	
-	//Geplant das sich mithilfe der Pfeil Buttons immer nur 7 Bilder anzeigen lassen mit
-	//mit Klick auf rechts bzw links sollen sich die Bilder verschieben
-	//sollte 0 oder max erreicht werden benachrichtigung an den User ->  bis dass das 
-	//erste bzw letzte Bild erreicht wurde
+	
+	public void setI(int i) {
+		this.i = i;
+	}
+	
+	public int getI() {
+		return i;
+	}
+	
+	public JPanel getPanel() {
+		return panel;
+	}
+	
+	
+	//Wenn i = 0 dann 0 Elemente / erster Eintrag
+	//dann muss erster Eintrag auf gridx = 3;
+	//i ist IMMER aktueller Eintrag	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		JButton clicked = (JButton)e.getSource();
@@ -179,7 +280,12 @@ public class Slide implements ActionListener{
 		if(clicked == btnL) {
 			i = getI();
 			if(i == 0) {
-				System.out.println("Erstes Bild!");
+				setI(--check);
+				try {
+					((MainView) mainView).showInView();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
 			}else {
 				setI(--i);
 				try {
@@ -188,14 +294,18 @@ public class Slide implements ActionListener{
 					e1.printStackTrace();
 				}
 			}
-			System.out.println(i);
-			System.out.println("<-");
+			System.out.println("I = " + i + " <-");
 		}
 		
 		else if(clicked == btnR) {
 			i = getI();
 			if(i  == --check) {
-				System.out.println("Letztes Bild!");
+				setI(0);
+				try {
+					((MainView) mainView).showInView();
+				} catch (SQLException e1) {
+					e1.printStackTrace();
+				}
 			}else {
 				setI(++i);
 				try {
@@ -204,8 +314,7 @@ public class Slide implements ActionListener{
 					e1.printStackTrace();
 				}
 			}
-			System.out.println(i);
-			System.out.println("->");
+			System.out.println("I = " + i + " <-");
 		}		
 	}
 	

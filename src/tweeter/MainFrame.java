@@ -15,6 +15,7 @@ import database.Database;
 public class MainFrame implements ActionListener {
 	private static JFrame frame;
 	private MainView mainView;
+	private Object slider;
 	
 	public MainFrame() throws SQLException {
 		
@@ -64,10 +65,10 @@ public class MainFrame implements ActionListener {
 		}else if(clicked.getText() == "Löschen") {
 			Database db = mainView.getDatabase();
 			int index = mainView.getBtnCounter();
-			System.out.println(++index);
+			System.out.println(index);
 			try {
-				db.deleteTweet(index);
-				System.out.println("Löschen!");
+				db.deleteTweet(++index);
+				mainView.removeFromSlide(--index);
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}

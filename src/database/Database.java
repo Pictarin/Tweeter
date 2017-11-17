@@ -14,6 +14,7 @@ public class Database {
 	private String sql;
 	private ResultSet rs;
 	private PreparedStatement preparedStatement;
+	private int index;
 	
 	public Database() {
 		c = null;
@@ -45,7 +46,7 @@ public class Database {
 			//stmt.executeUpdate(sql);
 			
 			//DELETE METHODE - hier wird der ganze Eintrag aus der DB gelöscht wo sich die ID 2 befindet
-			//String sql = "DELETE from TWEETS where ID = 2;";
+			//String sql = "DELETE from TWEETS where ID = 2";
 			//stmt.executeUpdate(sql);
 			
 		} catch(Exception e) {
@@ -57,14 +58,22 @@ public class Database {
 	}
 	
 	public void deleteTweet(int index) throws SQLException {
-		preparedStatement = c.prepareStatement("DELETE from TWEETS where ID = ?");
+		System.out.println("Lösche Eintrag bei ID = " + index);
 		
-		preparedStatement.setInt(1, index);		
-		int result = preparedStatement.executeUpdate();		
+		System.out.println("ID´s = " + getPrimaryKey());
+		sql = "DELETE FROM TWEETS WHERE ID = ?";
 		
-		if (result == 1) {
+		this.index = index;
+		
+		preparedStatement = c.prepareStatement(sql);
+		preparedStatement.setInt(1, index);
+		
+		int r = preparedStatement.executeUpdate();
+		
+		if(r == 1) {
 			c.commit();
 		}
+		
 	}
 	
 	//Add a new Tweet to the DB
@@ -81,6 +90,7 @@ public class Database {
 		
 		if (result == 1) {
 			c.commit();
+			System.out.println("ID´s = " + getPrimaryKey());
 		}
 	}
 	
