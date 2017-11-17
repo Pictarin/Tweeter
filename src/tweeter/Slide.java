@@ -36,6 +36,7 @@ public class Slide implements ActionListener{
 	public TweetPanelRecording tweetPanel;
 	private static Database db;
 	private Object mainView;
+	private int position = 1;
 	
 	public Slide(Database database, Object mainView) throws SQLException {
 		this.mainView = mainView;
@@ -77,39 +78,10 @@ public class Slide implements ActionListener{
 		//Bei Start soll geschaut werden welche Tweets bereits vorhanden sind
 		//Bilder werden dann angezeigt
 		//Icons for SlideBar
-		imagesFromTweets = db.getTweetImage();
-		for(i = 0; i < imagesFromTweets.size(); i++) {
-			String path = imagesFromTweets.get(i);
-			ImageIcon image = new ImageIcon(path);
-			image = formatImage(path);
-			//Bestehende Elemente aus der DB auf dem Grid anordnen bei Start der Application
-			if(counter < 5) {
-				imageLabel = new JLabel(image);
-				imageLabel.setVisible(true);
-				int gridPosition = i;
-				gc.gridx = ++gridPosition;
-				gc.gridy = 0;
-				gc.anchor = GridBagConstraints.NORTH;
-				gc.insets = new Insets(0, 5, 0, 5);
-				panel.add(imageLabel, gc);
-				imageLabels.add(imageLabel);
-				counter++;
-			} else {
-				imageLabel = new JLabel(image);
-				imageLabel.setVisible(false);
-				int gridPosition = i;
-				gc.gridx = ++gridPosition;
-				gc.gridy = 0;
-				gc.anchor = GridBagConstraints.NORTH;
-				gc.insets = new Insets(0, 5, 0, 5);
-				panel.add(imageLabel, gc);
-				imageLabels.add(imageLabel);
-				counter++;
-			}
-		}
-		setI(0);
-		visibleInSlide();
 		
+		createSlideIcons();
+		
+		setI(0);	
 		
 		//Grid for content on the Panel
 		gc.gridx = 0;
@@ -131,31 +103,53 @@ public class Slide implements ActionListener{
 	
 	public void createSlideIcons() throws SQLException {
 		imagesFromTweets = db.getTweetImage();
+		int gridPosition = 3;
 		for(i = 0; i < imagesFromTweets.size(); i++) {
 			String path = imagesFromTweets.get(i);
 			ImageIcon image = new ImageIcon(path);
 			image = formatImage(path);
 			//Bestehende Elemente aus der DB auf dem Grid anordnen bei Start der Application
-			if(counter < 5) {
+			if(counter <= 5) {
 				imageLabel = new JLabel(image);
 				imageLabel.setVisible(true);
-				int gridPosition = i;
-				gc.gridx = ++gridPosition;
-				gc.gridy = 0;
-				gc.anchor = GridBagConstraints.NORTH;
-				gc.insets = new Insets(0, 5, 0, 5);
-				panel.add(imageLabel, gc);
-				counter++;
+				if(i == 0) {
+					gc.gridx = gridPosition;
+					gc.gridy = 0;
+					gc.anchor = GridBagConstraints.NORTH;
+					gc.insets = new Insets(0, 5, 0, 5);
+					panel.add(imageLabel, gc);
+					imageLabels.add(imageLabel);
+					counter++;
+				}else if(i == 1 || i == 2){
+					gc.gridx = ++gridPosition;
+					gc.gridy = 0;
+					gc.anchor = GridBagConstraints.NORTH;
+					gc.insets = new Insets(0, 5, 0, 5);
+					panel.add(imageLabel, gc);
+					imageLabels.add(imageLabel);
+					counter++;	
+				}else if(i == 3) {
+					gc.gridx = 1;
+					gc.gridy = 0;
+					gc.anchor = GridBagConstraints.NORTH;
+					gc.insets = new Insets(0, 5, 0, 5);
+					panel.add(imageLabel, gc);
+					imageLabels.add(imageLabel);
+					counter++;	
+				}else if(i == 4) {
+					gc.gridx = 2;
+					gc.gridy = 0;
+					gc.anchor = GridBagConstraints.NORTH;
+					gc.insets = new Insets(0, 5, 0, 5);
+					panel.add(imageLabel, gc);
+					imageLabels.add(imageLabel);
+					counter++;	
+					
+				}
 			} else {
-				imageLabel = new JLabel(image);
-				imageLabel.setVisible(false);
-				int gridPosition = i;
-				gc.gridx = ++gridPosition;
-				gc.gridy = 0;
-				gc.anchor = GridBagConstraints.NORTH;
-				gc.insets = new Insets(0, 5, 0, 5);
-				panel.add(imageLabel, gc);
-				counter++;
+				imageLabel = new JLabel(image);			//in ein Array garnicht erst anordnen erst bei Index abfrage
+				imageLabels.add(imageLabel);			//im Array auf grid setzen
+				counter++;								//Array beginnt bei 0 grid bei 1 und imageID bei 1
 			}
 		}
 	}
@@ -172,48 +166,59 @@ private void visibleInSlide() throws SQLException {
 		int gridPosition = tweetsInDatabase;
 		String imagePath = path;
 		ImageIcon image = formatImage(imagePath);
-		imagePathArray = db.getTweetImage();		
 		
-		if(imagePathArray.size() <= 5) {
-			panel.remove(btnR);
-			
+		System.out.println("Größe = " + imagePathArray.size());		
+		imagePathArray = db.getTweetImage();
+		
+		System.out.println("Größe = " + imagePathArray.size());		
+		if(imagePathArray.size() == 1) {
 			imageLabel = new JLabel(image);
-			gc.gridx = gridPosition;
+			gc.gridx = 3;
+			gc.gridy = 0;
+			gc.anchor = GridBagConstraints.NORTH;
+			gc.insets = new Insets(0, 5, 0, 5);
+			panel.add(imageLabel, gc);
+			imageLabels.add(imageLabel);
+		}else if(imagePathArray.size() == 2) {
+			imageLabel = new JLabel(image);
+			gc.gridx = 4;
 			gc.gridy = 0;
 			gc.anchor = GridBagConstraints.NORTH;
 			gc.insets = new Insets(0, 5, 0, 5);
 			panel.add(imageLabel, gc);
 			imageLabels.add(imageLabel);
 			
-			gc.gridx = ++gridPosition;
+		}else if(imagePathArray.size() == 3) {
+			imageLabel = new JLabel(image);
+			gc.gridx = 5;
 			gc.gridy = 0;
-			gc.anchor = GridBagConstraints.EAST;
-			gc.insets = new Insets(0, 5, 0, 0);
-			panel.add(btnR, gc);
-		}else {
-			panel.remove(btnR);
+			gc.anchor = GridBagConstraints.NORTH;
+			gc.insets = new Insets(0, 5, 0, 5);
+			panel.add(imageLabel, gc);
+			imageLabels.add(imageLabel);
 			
+		}else if(imagePathArray.size() == 4) {
+			imageLabel = new JLabel(image);
+			gc.gridx = 1;
+			gc.gridy = 0;
+			gc.anchor = GridBagConstraints.NORTH;
+			gc.insets = new Insets(0, 5, 0, 5);
+			panel.add(imageLabel, gc);
+			imageLabels.add(imageLabel);
+			
+		}else if(imagePathArray.size() == 5) {
+			imageLabel = new JLabel(image);
+			gc.gridx = 2;
+			gc.gridy = 0;
+			gc.anchor = GridBagConstraints.NORTH;
+			gc.insets = new Insets(0, 5, 0, 5);
+			panel.add(imageLabel, gc);
+			imageLabels.add(imageLabel);
+			
+		}else {		
 			imageLabel = new JLabel(image);
 			imageLabel.setVisible(false);
-			gc.gridx = gridPosition;
-			gc.gridy = 0;
-			gc.anchor = GridBagConstraints.NORTH;
-			gc.insets = new Insets(0, 5, 0, 5);
-			panel.add(imageLabel, gc);
 			imageLabels.add(imageLabel);
-			if(imagePathArray.size() >= 5) {
-				gc.gridx = 6;
-				gc.gridy = 0;
-				gc.anchor = GridBagConstraints.EAST;
-				gc.insets = new Insets(0, 5, 0, 0);
-				panel.add(btnR, gc);	
-			}else {
-				gc.gridx = ++gridPosition;
-				gc.gridy = 0;
-				gc.anchor = GridBagConstraints.EAST;
-				gc.insets = new Insets(0, 5, 0, 0);
-				panel.add(btnR, gc);
-			}
 		}
 	}
 	
@@ -314,7 +319,7 @@ private void visibleInSlide() throws SQLException {
 					e1.printStackTrace();
 				}
 			}
-			System.out.println("I = " + i + " <-");
+			System.out.println("I = " + i + " ->");
 		}		
 	}
 	

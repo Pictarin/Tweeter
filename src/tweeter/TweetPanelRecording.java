@@ -43,10 +43,12 @@ public class TweetPanelRecording implements ActionListener, FocusListener {
 	
 	private Database db = new Database();
 	private JFileChooser fileChooser;
+	private Object mainView;
 	
 	public Tweet tweet;	
 	
-	public TweetPanelRecording(Runnable finishedCallback){
+	public TweetPanelRecording(Runnable finishedCallback, Object mainView){
+		this.mainView = mainView;
 		callback = finishedCallback;
 		buildPanel();
 		
@@ -195,6 +197,7 @@ public class TweetPanelRecording implements ActionListener, FocusListener {
 				//Prüfen ob alles ausgefüllt wurde
 				new Tweet(db, db.getPrimaryKey() + 1, header.getText(), description.getText(), icon.getDescription());
 				Slide.addInToSlide(icon.getDescription());
+				((MainView) mainView).showInView();
 			} catch (SQLException ex) {
 				System.err.println(ex.getClass().getName() + ": " + ex.getMessage());
 				System.exit(0);

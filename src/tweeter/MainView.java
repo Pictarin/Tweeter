@@ -41,7 +41,7 @@ public class MainView implements ActionListener {
 	}
 	
 	private void buildPanel() throws SQLException {
-		recordingPanel = new TweetPanelRecording(callback);
+		recordingPanel = new TweetPanelRecording(callback, this);
 		db = recordingPanel.getDatabase();
 		
 		// Create Panel		
